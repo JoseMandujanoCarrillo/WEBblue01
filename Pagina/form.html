@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Movies - Form</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <h1>Movie Manager</h1>
+  
+  <!-- Formulario para agregar o actualizar películas -->
+  <section id="form-section">
+    <div class="form-container">
+      <h2 id="form-title">Agregar Película</h2>
+      <form id="movie-form">
+        <input type="hidden" id="movie-id">
+        <div class="form-group">
+          <label for="titulo">Título:</label>
+          <input type="text" id="titulo" placeholder="Ej. Interstellar" required>
+        </div>
+        <div class="form-group">
+          <label for="imagen">URL de Imagen:</label>
+          <input type="text" id="imagen" placeholder="Ej. https://..." required>
+        </div>
+        <div class="form-group">
+          <label for="director">Director:</label>
+          <input type="text" id="director" placeholder="Ej. Christopher Nolan" required>
+        </div>
+        <div class="form-group">
+          <label for="genero">Género:</label>
+          <input type="text" id="genero" placeholder="Ej. Ciencia ficción" required>
+        </div>
+        <div class="form-group">
+          <label for="puntuacion">Puntuación:</label>
+          <input type="number" id="puntuacion" min="0" max="10" step="0.1" placeholder="Ej. 9.0" required>
+        </div>
+        <div class="form-group">
+          <label for="rating">Rating:</label>
+          <input type="text" id="rating" placeholder="Ej. PG-13" required>
+        </div>
+        <div class="form-group">
+          <label for="anio">Año:</label>
+          <input type="number" id="anio" placeholder="Ej. 2014" required>
+        </div>
+        <div class="form-actions">
+          <button type="submit" id="submit-btn">Guardar</button>
+          <a href="index.html" class="btn">Cancelar</a>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <script src="form.js"></script>
+</body>
+</html>

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Movie Details</title>
+  <link rel="stylesheet" href="styles2.css">
+</head>
+<body>
+  <div id="movie-details" class="movie-details">Cargando...</div>
+  <div class="nav-buttons">
+    <button id="prev-btn" disabled>Anterior</button>
+    <button id="next-btn">Siguiente</button>
+  </div>
+
+  <script>
+    // Obtener el ID de la película desde la URL
+    let currentMovieId = new URLSearchParams(window.location.search).get('id');
+    console.log('Movie ID from URL:', currentMovieId);  // Verificar que se esté obteniendo el ID
+
+    // Si no hay ID, mostrar un error
+    if (!currentMovieId) {
+      document.getElementById('movie-details').innerHTML = 'ID de película no proporcionado.';
+      console.error('No movie ID provided in URL');
+    }
+
+    // Función para cargar los detalles de la película
+    function loadMovie(id) {
+      fetch(`http://localhost:3000/films/${id}`)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`Error al obtener los detalles de la película: ${response.statusText}`);
+          }
+          return response.json();
+        })
+        .then(movie => {
+          console.log('Movie details:', movie);  // Verificar que los detalles de la película se reciban
+          const container = document.getElementById('movie-details');
+          container.innerHTML = `
+            <h1>${movie.titulo}</h1>
+            <img src="${movie.imagen}" alt="${movie.titulo}">
+            <p><strong>Director:</strong> ${movie.director}</p>
+            <p><strong>Género:</strong> ${movie.genero}</p>
+            <p><strong>Puntuación:</strong> ${movie.puntuacion}</p>
+            <p><strong>Rating:</strong> ${movie.rating}</p>
+            <p><strong>Año:</strong> ${movie.anio}</p>
+          `;
+        })
+        .catch(error => {
+          console.error('Error al cargar la película:', error);
+          document.getElementById('movie-details').innerHTML = 'Error al cargar la película.';
+        });
+    }
+
+    // Lógica para habilitar/deshabilitar los botones Anterior/Siguiente
+    function updateButtons() {
+      fetch('http://localhost:3000/films')
+        .then(response => response.json())
+        .then(movies => {
+          const totalMovies = movies.length;
+          const currentIndex = movies.findIndex(movie => movie._id === currentMovieId);
+          
+          // Deshabilitar el botón de "Anterior" si es la primera película
+          document.getElementById('prev-btn').disabled = currentIndex === 0;
+          // Deshabilitar el botón de "Siguiente" si es la última película
+          document.getElementById('next-btn').disabled = currentIndex === totalMovies - 1;
+        })
+        .catch(error => console.error('Error al obtener las películas:', error));
+    }
+
+    // Navegar a la película anterior
+    document.getElementById('prev-btn').addEventListener('click', () => {
+      fetch('http://localhost:3000/films')
+        .then(response => response.json())
+        .then(movies => {
+          const currentIndex = movies.findIndex(movie => movie._id === currentMovieId);
+          if (currentIndex > 0) {
+            currentMovieId = movies[currentIndex - 1]._id;
+            loadMovie(currentMovieId);
+            updateButtons();
+          }
+        })
+        .catch(error => console.error('Error al obtener las películas:', error));
+    });
+
+    // Navegar a la película siguiente
+    document.getElementById('next-btn').addEventListener('click', () => {
+      fetch('http://localhost:3000/films')
+        .then(response => response.json())
+        .then(movies => {
+          const currentIndex = movies.findIndex(movie => movie._id === currentMovieId);
+          if (currentIndex < movies.length - 1) {
+            currentMovieId = movies[currentIndex + 1]._id;
+            loadMovie(currentMovieId);
+            updateButtons();
+          }
+        })
+        .catch(error => console.error('Error al obtener las películas:', error));
+    });
+
+    // Si se ha obtenido un ID válido, cargar la película
+    if (currentMovieId) {
+      loadMovie(currentMovieId);
+      updateButtons();
+    }
+  </script>
+</body>
+</html>

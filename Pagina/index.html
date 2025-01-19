@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Movies</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <h1>Movie List</h1>
+  
+  <!-- Botones para agregar película -->
+  <div>
+    <button onclick="window.location.href='form.html'">Agregar Nueva Película</button>
+  </div>
+
+  <!-- Contenedor de películas -->
+  <section id="movies-container" class="movie-list"></section>
+
+  <script>
+    const API_URL = 'http://localhost:3000/films';
+
+    // Cargar las películas
+    function loadMovies() {
+      fetch(API_URL)
+        .then(response => response.json())
+        .then(data => {
+          const container = document.getElementById('movies-container');
+          container.innerHTML = data.map(movie => `
+            <div class="movie-card">
+              <img src="${movie.imagen}" alt="${movie.titulo}">
+              <h2>${movie.titulo}</h2>
+              <button onclick="window.location.href='movie.html?id=${movie._id}'">Ver Detalles</button>
+              <button onclick="updateMovie('${movie._id}')">Editar</button>
+              <button onclick="deleteMovie('${movie._id}')">Eliminar</button>
+            </div>
+          `).join('');
+        })
+        .catch(error => console.error('Error al cargar las películas:', error));
+    }
+
+    // Función para editar película
+    function updateMovie(id) {
+      window.location.href = `form.html?id=${id}`;
+    }
+
+    // Función para eliminar película
+    function deleteMovie(id) {
+      if (confirm('¿Estás seguro de que deseas eliminar esta película?')) {
+        fetch(`${API_URL}/${id}`, { method: 'DELETE' })
+          .then(response => {
+            if (response.ok) {
+              loadMovies();  // Recargar las películas después de la eliminación
+            } else {
+              alert('Error al eliminar la película.');
+            }
+          })
+          .catch(error => console.error('Error al eliminar la película:', error));
+      }
+    }
+
+    // Cargar las películas cuando se carga la página
+    loadMovies();
+  </script>
+</body>
+</html>
